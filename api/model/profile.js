@@ -20,6 +20,10 @@ const profileSchema = new Schema ({
   devices: {
     type: String,
   },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'auth',
+  },
 });
 
 module.exports = mongoose.model ('profile', profileSchema);
