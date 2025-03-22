@@ -1,6 +1,7 @@
 const Auth = require ('../model/auth');
 const Profile = require ('../model/profile');
 const bcrypt = require ('bcryptjs');
+const passport = require ('passport');
 const {
   isEmpty,
   isValidUsername,
@@ -69,3 +70,24 @@ exports.signup = async (req, res, next) => {
     res.status (500).json ({message: 'Internal server error has been occured'});
   }
 };
+
+exports.login = (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+    if (!user) {
+      return res.status(401).json({ message: info?.message || 'Authentication failed' });
+    }
+    
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        logger.info(`Error while logging in:${loginErr}`)
+        return res.status(500).json({ message: 'Login failed' });
+      }
+      logger.info(`User logged in with user ID: ${user.id}`);
+      return res.status(200).json({ message: 'User logged in successfully', userId:user._id });
+    });
+  })(req, res, next);
+};
+

@@ -5,12 +5,24 @@ const bodyParser = require ('body-parser');
 const mongoose = require ('mongoose');
 const cors = require ('cors');
 const authRoutes = require ('./routes/auth');
+const session = require ('express-session');
+const passport = require ('./util/passport');
 
 const app = express ();
 const PORT = process.env.PORT || 8080;
 
 // Initialize body-parser to parse JSON request bodies
 app.use (bodyParser.json ());
+//session middleware to store passport data
+app.use (
+  session ({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use (passport.initialize ());
+app.use (passport.session ());
 
 //Initialize the routes
 app.use ('/auth', authRoutes);
