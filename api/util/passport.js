@@ -1,9 +1,11 @@
 const passport = require ('passport');
 const LocalStrategy = require ('passport-local').Strategy;
+const GoogleStrategy = require ('passport-google-oauth20').Strategy;
 const Auth = require ('../model/auth');
 const bcrypt = require ('bcryptjs');
 const logger = require ('./logger');
 
+// passport local authentication
 passport.use (
   new LocalStrategy (
     {usernameField: 'email'},
@@ -24,6 +26,44 @@ passport.use (
       } catch (error) {
         logger.error (`Error while logging in:${error}`);
         return done (error);
+      }
+    }
+  )
+);
+
+passport.use (
+  new GoogleStrategy (
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: '/auth/google/callback',
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        let user = await Auth.findOne ({googleId: profile.id});
+        let existingUser = await Auth.findOne ({
+          email: profile.emails[0].value,
+        });
+        if (existingUser) {
+          logger.error ('The email address already exists');
+          return done (null, false, {
+            message: 'User already exists with this email. Please log in instead.',
+          });
+        }
+
+        if (!user) {
+          user = new Auth ({
+            googleId: profile.id,
+            email: profile.emails[0].value,
+            username: profile.displayName,
+            profilePicture: profile.photos[0].value,
+          });
+          await user.save ();
+        }
+        return done (null, user);
+      } catch (error) {
+        logger.error (`Error while signing up using google auth: ${error}`);
+        return done (error, null);
       }
     }
   )

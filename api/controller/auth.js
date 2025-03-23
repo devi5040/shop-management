@@ -18,7 +18,7 @@ const logger = require ('../util/logger');
  * @param {Object} req 
  * @param {Object} req.body - {username:string, email:string, password:string}
  * @param {Object} res 
- * @param {Object} next 
+ * @param {Function} next 
  * @returns {Promise<void>}
  */
 exports.signup = async (req, res, next) => {
@@ -71,6 +71,13 @@ exports.signup = async (req, res, next) => {
   }
 };
 
+/**
+ * Handles the logging in through passport js local strategy
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @return {Promise<void>}
+ */
 exports.login = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
@@ -91,3 +98,40 @@ exports.login = (req, res, next) => {
   })(req, res, next);
 };
 
+/**
+ * Initiates Google OAuth authentication process.
+ * Redirects the user to Google's login page where they can authenticate.
+ * The callback URL will handle the response after authentication.
+ */
+exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
+
+/**
+ * Handles the Google OAuth callback after user authentication.
+ * - Uses Passport.js to authenticate the user with Google.
+ * - If authentication fails, returns an appropriate error response.
+ * - If successful, logs the user in and returns a success response with user ID.
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Function} next
+ * @returns {Promise<void>}
+ */
+exports.googleCallback= (req,res,next)=>{
+  passport.authenticate("google",(error, user, info)=>{
+    if(error){
+      logger.error(`Error in google callback function:${error}`)
+      return res.status(500).json({message:"Internal server error"})
+    }
+    if(!user){
+      logger.error('User authentication failed')
+      return res.status(401).json({message:info?.message||'Authentication failed'})
+    }
+    req.logIn(user,loginErr=>{
+      if(loginErr){
+        logger.error(`User login failed: ${loginErr}`)
+        return res.status(500).json({message:'User login failed'})
+      }
+      logger.info(`User logged in successfully. google id:${user.googleId} and userId:${user._id}`)
+      return res.status(200).json({message:"User logged in successfully",userId:user._id})
+    })
+  })(req,res,next);
+}
