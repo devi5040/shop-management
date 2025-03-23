@@ -12,4 +12,9 @@ router.get ('/google', authController.googleLogin);
 // Google callback url route definition
 router.get ('/google/callback', authController.googleCallback);
 
+// User login using facebook authentication
+router.get ('/facebook', authController.facebookLogin);
+// Facebook callback url route definition
+router.get ('/facebook/callback', authController.facebookCallback);
+
 module.exports = router;

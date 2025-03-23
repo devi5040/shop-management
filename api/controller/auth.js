@@ -135,3 +135,39 @@ exports.googleCallback= (req,res,next)=>{
     })
   })(req,res,next);
 }
+
+/**
+ * Initiates Facebook authentication process.
+ * Redirects the user to Facebook's login page where they can authenticate.
+ * The callback URL will handle the response after authentication.
+ */
+exports.facebookLogin = passport.authenticate('facebook',{scope:['email']});
+
+/**
+ * Handles facebook callback after user authentication
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.facebookCallback = async(req,res,next)=>{
+  passport.authenticate('facebook',(error, user, info)=>{
+    if(error){
+      logger.info(`Some internal error while handling facebook callback: ${error}`)
+      return res.status(500).json({message:'Internal server error'})
+    }
+    if(!user){
+      logger.error('User authentication failed');
+      return res.status(401).json({message:info?.message||'Authentication failed'})
+    }
+
+    req.logIn(user, (loginErr)=>{
+      if(loginErr){
+        logger.error(`Error while logging in using facebook: ${loginErr}`);
+        return res.status(500).json({message:'Logging in failed'})
+      }
+      logger.info(`User logged in successfully. facebookId:${user.facebookId} userId:${user._id}`)
+      return res.status(200).json({message:'User logged in successfully',userid:user._id})
+    })
+  })
+}

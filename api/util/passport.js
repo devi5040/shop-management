@@ -1,6 +1,7 @@
 const passport = require ('passport');
 const LocalStrategy = require ('passport-local').Strategy;
 const GoogleStrategy = require ('passport-google-oauth20').Strategy;
+const FacebookStrategy = require ('passport-facebook').Strategy;
 const Auth = require ('../model/auth');
 const bcrypt = require ('bcryptjs');
 const logger = require ('./logger');
@@ -64,6 +65,43 @@ passport.use (
       } catch (error) {
         logger.error (`Error while signing up using google auth: ${error}`);
         return done (error, null);
+      }
+    }
+  )
+);
+
+passport.use (
+  new FacebookStrategy (
+    {
+      clientID: process.env.FACEBOOK_APP_ID,
+      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      callbackURL: '/auth/facebook/callback',
+      profileFields: ['id', 'displayName', 'emails', 'photos'],
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        let user = await Auth.findOne({facebookId:profile.id});
+
+        if(!user){
+          const existingUser = await Auth.findOne({email:profile.emails[0]?.value});
+
+          if(existingUser){
+            done(null,false,{message:"User already exists with this email login instead"})
+          }
+
+          // create a new user
+          user = new Auth({
+            facebookId: profile.id,
+            email: profile.emails[0]?.value,
+            username: profile.displayName,
+            profilePicture: profile.photos[0].value
+          });
+          await user.save();
+        }
+        return done(null,user)
+      } catch (error) {
+        logger.error(`Some error occured while logging in with facebook: ${error}`)
+        return done(error,null)
       }
     }
   )
