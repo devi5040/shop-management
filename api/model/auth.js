@@ -29,6 +29,10 @@ const authSchema = new Schema (
     profilePicture: {
       type: String,
     },
+    role: {
+      type: String,
+      default: 'user',
+    },
   },
   {timestamps: true}
 );

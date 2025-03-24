@@ -16,3 +16,18 @@ export const isValidPassword = password => {
   const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return passwordRegex.test (password);
 };
+
+export const isNumber = value => {
+  const numRegex = /^\d+$/;
+  return numRegex.test (value);
+};
+
+export const isProductName = value => {
+  const productNameRegex = /^[a-zA-Z0-9\s\-_]+$/;
+  return productNameRegex.test (value);
+};
+
+export const isDescription = description => {
+  const descriptionRegex = /^[\s\S]{1,500}$/;
+  return descriptionRegex.test (description);
+};

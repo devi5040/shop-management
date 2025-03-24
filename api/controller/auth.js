@@ -172,6 +172,13 @@ exports.facebookCallback = async(req,res,next)=>{
   })
 }
 
+/**
+ * Handles the user logout
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
 exports.logout = (req,res,next) =>{
   req.logout(err=>{
     if(err){
