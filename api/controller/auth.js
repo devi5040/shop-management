@@ -171,3 +171,21 @@ exports.facebookCallback = async(req,res,next)=>{
     })
   })
 }
+
+exports.logout = (req,res,next) =>{
+  req.logout(err=>{
+    if(err){
+      logger.error(`Error while logging out user: ${err}`);
+      return res.status(500).json({message:'Error while logging out'})
+    }
+    req.session.destroy(destroyErr=>{
+      if(destroyErr){
+        logger.error(`Session destruction failed: ${destroyErr}`)
+        return res.status(500).json({message:'Internal error while logging out'})
+      }
+      res.clearCookie("connect.sid");
+      logger.error('User logged out successfully')
+      res.status(200).json({message:"User logged out successfully"})
+    })
+  })
+}

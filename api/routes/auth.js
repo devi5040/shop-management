@@ -17,4 +17,7 @@ router.get ('/facebook', authController.facebookLogin);
 // Facebook callback url route definition
 router.get ('/facebook/callback', authController.facebookCallback);
 
+// Logs out the user and clears the session
+router.get ('/logout', authController.logout);
+
 module.exports = router;
