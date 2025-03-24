@@ -17,17 +17,17 @@ export const isValidPassword = password => {
   return passwordRegex.test (password);
 };
 
-export const isNumber = value => {
+export const isValidNumber = value => {
   const numRegex = /^\d+$/;
   return numRegex.test (value);
 };
 
-export const isProductName = value => {
+export const isValidProductName = value => {
   const productNameRegex = /^[a-zA-Z0-9\s\-_]+$/;
   return productNameRegex.test (value);
 };
 
-export const isDescription = description => {
+export const isValidDescription = description => {
   const descriptionRegex = /^[\s\S]{1,500}$/;
   return descriptionRegex.test (description);
 };
