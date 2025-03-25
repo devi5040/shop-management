@@ -48,4 +48,16 @@ const upload = multer ({
   }),
 });
 
-module.exports = upload;
+// Helper middleware to handle file uploads only if a file exists - product update
+const uploadIfFileExists = (req, res, next) => {
+  // Check if the request contains a file
+  if (!req.headers["content-type"]?.includes("multipart/form-data")) {
+    return next(); // No file uploaded, skip multer
+  }
+
+  // If there's a file, process it with multer
+  upload.single("file")(req, res, next);
+};
+
+
+module.exports = {upload, uploadIfFileExists};

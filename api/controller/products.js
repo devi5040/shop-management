@@ -78,3 +78,89 @@ exports.addProducts = async (req, res, next) => {
     return res.status (500).json ({message: 'Error while adding product'});
   }
 };
+
+/**
+ * Search the product with the given product id and update the information received.
+ * @param {Object} req 
+ * @param {Object} req.body
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.editProductsData = async (req, res, next) => {
+  const productId = req.params.productId;
+  const updateData = req.body;
+  if(req.file)
+    updateData.productImage = req.file.location
+  const errors = [];
+  if (
+    updateData.name &&
+    (isEmpty (updateData.name) || !isValidProductName (updateData.name))
+  ) {
+    logger.error ('The product name entered is not valid');
+    errors.push ('Product name is invalid');
+  }
+  if (
+    updateData.description &&
+    (isEmpty (updateData.description) ||
+      !isValidDescription (updateData.description))
+  ) {
+    logger.error ('The product description entered is not valid');
+    errors.push ('Product description is invalid');
+  }
+  if (
+    updateData.price &&
+    (isEmpty (updateData.price) || !isValidNumber (updateData.price))
+  ) {
+    logger.error ('The product price entered is not valid');
+    errors.push ('Product price is invalid');
+  }
+  if (updateData.category && isEmpty (updateData.category)) {
+    logger.error ('The product category entered is not valid');
+    errors.push ('Product category is invalid');
+  }
+  if (
+    updateData.stock &&
+    (isEmpty (updateData.stock) || !isValidNumber (updateData.stock))
+  ) {
+    logger.error (
+      `The product stock entered is not valid: ${updateData.stock}`
+    );
+    errors.push ('Product stock is invalid');
+  }
+
+  if (errors.length > 0)
+    return res
+      .status (422)
+      .json ({message: 'Validation error occured', errors});
+  try {
+    const isProductExists = await Product.findOne ({
+      name: updateData.name?.trim (),
+    });
+    if (isProductExists) {
+      logger.error ('The product already exists.');
+      return res
+        .status (409)
+        .json ({message: 'The product with entered name already exists.'});
+    }
+    const updateProduct = await Product.findByIdAndUpdate (
+      productId,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!updateProduct) {
+      logger.error (`Product does not found: ${updateProduct}`);
+      return res.status (404).json ({message: 'Product does not found'});
+    }
+    logger.info (
+      `Product updated successfully. product details:${updateProduct}`
+    );
+    res.status (200).json ({message: 'Product updated successfully'});
+  } catch (error) {
+    logger.error (`Error while updating product: ${error}`);
+    res.status (500).json ({message: 'Error while updating the product'});
+  }
+};
