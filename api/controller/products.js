@@ -192,15 +192,21 @@ exports.deleteProduct = async(req,res,next)=>{
 }
 
 /**
- * Get all the products.
+ * Get all the products. return category-wise products if category is provided else return all products
  * @param {Object} req 
  * @param {Object} res 
  * @param {Function} next 
  * @returns {Promise<void>}
  */
 exports.getAllProducts = async(req,res,next)=>{
+  const {category} = req.query;
+  const filter = category? {category}:{};
   try {
-    const products = await Product.find();
+    const products = await Product.find(filter);
+    if(!products){
+      logger.info(`No products available for category: ${category}`)
+      return res.status(404).json({message:"No products available for the category"})
+    }
     logger.info(`Products fetched successfully.`)
     res.status(200).json({message:"All products fetched successfully", products})
   } catch (error) {
