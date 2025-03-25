@@ -3,6 +3,9 @@ const router = express.Router ();
 const productController = require ('../controller/products');
 const {upload, uploadIfFileExists} = require ('../util/fileHelper');
 
+// route definition for getting all products
+router.get ('/products', productController.getAllProducts);
+
 // route definition for adding product after uploading the file into s3
 router.post (
   '/add-product',

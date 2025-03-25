@@ -190,3 +190,21 @@ exports.deleteProduct = async(req,res,next)=>{
     res.status(500).json({message:"Error while deleting the product"})
   }
 }
+
+/**
+ * Get all the products.
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.getAllProducts = async(req,res,next)=>{
+  try {
+    const products = await Product.find();
+    logger.info(`Products fetched successfully: ${JSON.stringify(products)}`)
+    res.status(200).json({message:"All products fetched successfully", products})
+  } catch (error) {
+    logger.error(`Error while fetching products: ${error}`);
+    res.status(500).json({message:"Error while fetching products"})
+  }
+}
