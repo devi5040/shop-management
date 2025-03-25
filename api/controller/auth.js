@@ -191,7 +191,7 @@ exports.logout = (req,res,next) =>{
         return res.status(500).json({message:'Internal error while logging out'})
       }
       res.clearCookie("connect.sid");
-      logger.error('User logged out successfully')
+      logger.info('User logged out successfully')
       res.status(200).json({message:"User logged out successfully"})
     })
   })

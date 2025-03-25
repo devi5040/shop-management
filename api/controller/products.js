@@ -17,6 +17,7 @@ const {
  */
 exports.addProducts = async (req, res, next) => {
   const {name, description, price, category, stock} = req.body;
+  const fileUrl = req.file.location;
 
   // Errors array to hold and return all validation errors
   let errors = [];
@@ -36,13 +37,44 @@ exports.addProducts = async (req, res, next) => {
     logger.error ('The category entered by admin is invalid');
     errors.push ('Entered category is invalid');
   }
-  if (isEmpty (stock) || !isValidNumber (stock)) {
+  if (!isEmpty (stock) && !isValidNumber (stock)) {
     logger.error ('The stock enterd by admin is invalid');
     errors.push ('Entered stock is invalid');
+  }
+  if (!req.file) {
+    logger.error ('No file is uploaded');
+    errors.push ('Please upload a product image');
   }
 
   if (errors.length > 0) {
     logger.error (`Validation error`);
     return res.status (422).json ({message: 'Validation error', errors});
+  }
+  try {
+    const isProductExists = await Product.findOne ({name: name.trim ()});
+    if (isProductExists) {
+      logger.error ('The product you are adding already exists');
+      return res
+        .status (409)
+        .json ({message: 'The product you are adding already exists.'});
+    }
+    const newProduct = new Product ({
+      name,
+      description,
+      price,
+      category,
+      stock,
+      productImage: fileUrl,
+    });
+    await newProduct.save ();
+    logger.info (
+      `The product has been added successfullty with id: ${newProduct._id}`
+    );
+    res
+      .status (201)
+      .json ({message: 'The product has been added successfully'});
+  } catch (error) {
+    logger.error (`Some error occured while adding product: ${error}`);
+    return res.status (500).json ({message: 'Error while adding product'});
   }
 };

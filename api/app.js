@@ -4,12 +4,15 @@ require ('dotenv').config ();
 const bodyParser = require ('body-parser');
 const mongoose = require ('mongoose');
 const cors = require ('cors');
-const authRoutes = require ('./routes/auth');
 const session = require ('express-session');
 const passport = require ('./util/passport');
 
 const app = express ();
 const PORT = process.env.PORT || 8080;
+
+// importing all the routes
+const authRoutes = require ('./routes/auth');
+const productRoutes = require ('./routes/products');
 
 // Initialize body-parser to parse JSON request bodies
 app.use (bodyParser.json ());
@@ -26,6 +29,7 @@ app.use (passport.session ());
 
 //Initialize the routes
 app.use ('/auth', authRoutes);
+app.use ('/product', productRoutes);
 
 // Initialize the connection to mongoose and start the server
 mongoose

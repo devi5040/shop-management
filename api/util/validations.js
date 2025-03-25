@@ -1,5 +1,5 @@
 export const isEmpty = value => {
-  return value.trim () === '';
+  return value ? value.trim () === '' : true;
 };
 
 export const isValidUsername = username => {
