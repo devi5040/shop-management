@@ -1,4 +1,4 @@
-const {S3Client} = require ('@aws-sdk/client-s3');
+const {S3Client,DeleteObjectCommand} = require ('@aws-sdk/client-s3');
 const multer = require ('multer');
 const multerS3 = require ('multer-s3');
 const logger = require ('./logger');
@@ -59,5 +59,21 @@ const uploadIfFileExists = (req, res, next) => {
   upload.single("file")(req, res, next);
 };
 
+//Helper function for removing the image from s3 bucket while deleting a product
+const removeImageFromS3 = async(imageUrl) =>{
+  const arr = imageUrl.split('/');
 
-module.exports = {upload, uploadIfFileExists};
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: `product/${arr[4]}`,
+  };
+
+  try {
+    const response = await s3.send(new DeleteObjectCommand(params));
+    logger.info(`Image removed from s3 successfully. response:${JSON.stringify(response)}`)
+  } catch (error) {
+    logger.error(`Error while deleting image from s3:${error}`)
+  }
+}
+
+module.exports = {upload, uploadIfFileExists, removeImageFromS3};

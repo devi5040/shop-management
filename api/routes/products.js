@@ -17,4 +17,6 @@ router.put (
   productController.editProductsData
 );
 
+// route definition for deleting a product
+router.delete ('/delete-product/:productId', productController.deleteProduct);
 module.exports = router;

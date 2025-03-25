@@ -6,6 +6,7 @@ const {
   isValidProductName,
   isValidDescription,
 } = require ('../util/validations');
+const {removeImageFromS3} = require('../util/fileHelper')
 
 /**
  * Adds the product if it doesn't already exists
@@ -164,3 +165,28 @@ exports.editProductsData = async (req, res, next) => {
     res.status (500).json ({message: 'Error while updating the product'});
   }
 };
+
+/**
+ * Delete the product with provided product id
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.deleteProduct = async(req,res,next)=>{
+  const productId = req.params.productId;
+  try {
+    const product = await Product.findById(productId);
+    if(!product){
+      logger.error(`The product does not exists. Product id: ${productId}`)
+      return res.status(404).json({message:"The product does not exists"})
+    }
+    removeImageFromS3(product.productImage)
+    await Product.findByIdAndDelete(productId);
+    logger.info(`The product has been deleted successfully. Product Id: ${productId}`)
+    res.status(200).json({message:'The product deleted successfully'})
+  } catch (error) {
+    logger.error(`Error while deleting the product: ${error}`)
+    res.status(500).json({message:"Error while deleting the product"})
+  }
+}
