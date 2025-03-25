@@ -6,6 +6,9 @@ const {upload, uploadIfFileExists} = require ('../util/fileHelper');
 // route definition for getting all products
 router.get ('/products', productController.getAllProducts);
 
+// route definition for fetching details of a product
+router.get ('/details/:productId', productController.getProductDetails);
+
 // route definition for adding product after uploading the file into s3
 router.post (
   '/add-product',

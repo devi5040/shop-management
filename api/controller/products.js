@@ -201,10 +201,33 @@ exports.deleteProduct = async(req,res,next)=>{
 exports.getAllProducts = async(req,res,next)=>{
   try {
     const products = await Product.find();
-    logger.info(`Products fetched successfully: ${JSON.stringify(products)}`)
+    logger.info(`Products fetched successfully.`)
     res.status(200).json({message:"All products fetched successfully", products})
   } catch (error) {
     logger.error(`Error while fetching products: ${error}`);
     res.status(500).json({message:"Error while fetching products"})
+  }
+}
+
+/**
+ * Fetch the details of a product by given product id
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.getProductDetails = async(req,res,next)=>{
+  const productId = req.params.productId;
+  try {
+    const product = await Product.findById(productId);
+    logger.error(`Product details fetched: ${product}`)
+    if(!product){
+      logger.error('Product does not found')
+      return res.status(404).json({message:'Product does not found'})
+    }
+    res.status(200).json({message:'Product details fetched successfully',product})
+  } catch (error) {
+    logger.error(`Error while fetching details of product:${productId}  Error:${error}`);
+    res.status(500).json({message:'Error while fetching details of the product'})
   }
 }
