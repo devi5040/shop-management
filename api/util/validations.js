@@ -31,3 +31,8 @@ export const isValidDescription = description => {
   const descriptionRegex = /^[\s\S]{1,500}$/;
   return descriptionRegex.test (description);
 };
+
+export const isValidDate = date => {
+  const date = new Date (date);
+  return !isNaN (date.getTime ());
+};
