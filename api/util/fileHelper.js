@@ -59,6 +59,39 @@ const uploadIfFileExists = (req, res, next) => {
   upload.single("file")(req, res, next);
 };
 
+// helper function for uploading the expenses bill image if it exists
+// Uploading the file to the amazon s3
+const uploadBill = multer ({
+  storage: multerS3 ({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    // Function to set metadata for the uploaded file
+    metadata: (req, file, cb) => {
+      cb (null, {fieldName: file.fieldname});
+    },
+    // Function to determine the file name in S3
+    key: (req, file, cb) => {
+      folderName = 'expenses';
+      const fileName = `${Date.now ()}-${file.originalname}`;
+      cb (null, `${folderName}/${fileName}`);
+    },
+    fileFilter: fileFilter,
+    limits: {fileSize: 25 * 1024 * 1024},
+  }),
+});
+
+// Upload the bill only if it exists
+const uploadIfBillExists = (req, res, next) => {
+  // Check if the request contains a file
+  if (!req.headers["content-type"]?.includes("multipart/form-data")) {
+    return next(); // No file uploaded, skip multer
+  }
+
+  // If there's a file, process it with multer
+  uploadBill.single("expenseFile")(req, res, next);
+};
+
 //Helper function for removing the image from s3 bucket while deleting a product
 const removeImageFromS3 = async(imageUrl) =>{
   const arr = imageUrl.split('/');
@@ -76,4 +109,4 @@ const removeImageFromS3 = async(imageUrl) =>{
   }
 }
 
-module.exports = {upload, uploadIfFileExists, removeImageFromS3};
+module.exports = {upload, uploadIfFileExists, removeImageFromS3, uploadIfBillExists};

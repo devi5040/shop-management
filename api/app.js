@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 8080;
 // importing all the routes
 const authRoutes = require ('./routes/auth');
 const productRoutes = require ('./routes/products');
+const expensesRoutes = require ('./routes/expenses');
 
 // Initialize body-parser to parse JSON request bodies
 app.use (bodyParser.json ());
@@ -30,6 +31,7 @@ app.use (passport.session ());
 //Initialize the routes
 app.use ('/auth', authRoutes);
 app.use ('/product', productRoutes);
+app.use ('/expenses', expensesRoutes);
 
 // Initialize the connection to mongoose and start the server
 mongoose
