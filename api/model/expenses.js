@@ -17,7 +17,6 @@ const expensesSchema = new Schema (
     },
     billImageUrl: {
       type: String,
-      required: true,
     },
     totalExpense: {
       type: String,
