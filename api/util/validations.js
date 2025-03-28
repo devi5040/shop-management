@@ -32,7 +32,7 @@ export const isValidDescription = description => {
   return descriptionRegex.test (description);
 };
 
-export const isValidDate = date => {
-  const date = new Date (date);
+export const isValidDate = inputDate => {
+  const date = new Date (inputDate);
   return !isNaN (date.getTime ());
 };
