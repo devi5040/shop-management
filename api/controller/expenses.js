@@ -86,3 +86,29 @@ exports.getAllExpenses = async (req, res, next) => {
     res.status (500).json ({message: 'Error while fetching expenses'});
   }
 };
+
+/**
+ * Fetch the expense details by given expense id
+ * @param {Object} req 
+ * @param {Object} req.params.expenseId
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.getExpense = async (req, res, next) => {
+  const expenseId = req.params.expenseId;
+  try {
+    const expense = await Expenses.findById (expenseId);
+    if (!expense) {
+      logger.error (`The expense does not found for id:${expenseId}`);
+      return res.status (404).json ({message: 'The expense does not exists'});
+    }
+    logger.info (`The exspense has been fetched successfully. ${expense}`);
+    res.status (200).json ({message: 'Details fetched successfully', expense});
+  } catch (error) {
+    logger.error (
+      `Error while fetching expense with id:${expenseId} Error: ${error}`
+    );
+    res.status (500).json ({message: 'Error while fetching expense details'});
+  }
+};
