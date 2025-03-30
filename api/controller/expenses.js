@@ -182,7 +182,7 @@ exports.updateExpense = async (req, res, next) => {
 };
 
 /**
- * Delete the expense if it exists
+ * Delete the expense if it exists otherwise return error
  * @param {Object} req 
  * @param {Object} res 
  * @param {Function} next 
