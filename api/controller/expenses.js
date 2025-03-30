@@ -180,3 +180,27 @@ exports.updateExpense = async (req, res, next) => {
     res.status (500).json ({message: 'Error while updating the expense.'});
   }
 };
+
+/**
+ * Delete the expense if it exists
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.deleteExpense = async (req, res, next) => {
+  const expenseId = req.params.expenseId;
+  try {
+    const isExpenseExists = await Expenses.findById (expenseId);
+    if (!isExpenseExists) {
+      logger.error (`Expense does not exists for id: ${expenseId}`);
+      return res.status (404).json ({message: 'Expense does not exists'});
+    }
+    await Expenses.findByIdAndDelete (expenseId);
+    logger.info ('The expense deleted successfully');
+    res.status (200).json ({message: 'The expense deleted successfully'});
+  } catch (error) {
+    logger.error (`Error while deleting the expense: ${error}`);
+    res.status (500).json ({message: 'Error while deleting the expense'});
+  }
+};
