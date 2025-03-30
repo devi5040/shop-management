@@ -112,3 +112,71 @@ exports.getExpense = async (req, res, next) => {
     res.status (500).json ({message: 'Error while fetching expense details'});
   }
 };
+
+/**
+ * Update an expense by given expense id and values
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.updateExpense = async (req, res, next) => {
+  const expenseId = req.params.expenseId;
+  const expenseData = req.body;
+  if (req.file) expenseData.billImageUrl = req.file.location;
+
+  const errors = [];
+  if (expenseData.title && isEmpty (expenseData.title)) {
+    logger.error ('Title is empty');
+    errors.push ('Title is invalid');
+  }
+  if (
+    expenseData.description &&
+    (isEmpty (expenseData.description) ||
+      !isValidDescription (expenseData.description))
+  ) {
+    logger.error ('Description is invalid');
+    errors.push ('Description is invalid');
+  }
+  if (
+    expenseData.date &&
+    (isEmpty (expenseData.date) || !isValidDate (expenseData.date))
+  ) {
+    logger.error ('Date is invalid');
+    errors.push ('Date is invalid');
+  }
+  if (
+    expenseData.totalExpense &&
+    (isEmpty (expenseData.totalExpense) ||
+      !isValidNumber (expenseData.totalExpense))
+  ) {
+    logger.error ('Total expense is invalid');
+    errors.push ('Total expense is invalid');
+  }
+  if (errors.length > 0)
+    return res.status (422).json ({message: 'Validation error', errors});
+
+  try {
+    const expense = await Expenses.findById (expenseId);
+    if (!expense) {
+      logger.error (`Expense does not found with id: ${expenseId}`);
+      return res.status (404).json ({message: 'Expense does not found'});
+    }
+    const isExpenseExists = await Expenses.findOne ({title: expenseData.title});
+    if (isExpenseExists) {
+      logger.error ('Expense with this name already exists.');
+      return res
+        .status (409)
+        .json ({message: 'Expense with this name already exists.'});
+    }
+    await Expenses.findByIdAndUpdate (expenseId, expenseData, {
+      runValidators: true,
+      new: true,
+    });
+    logger.info ('Expense updated successfully');
+    res.status (200).json ({message: 'Expense updated successfully'});
+  } catch (error) {
+    logger.error (`Error while updating the expense. ${error}`);
+    res.status (500).json ({message: 'Error while updating the expense.'});
+  }
+};
