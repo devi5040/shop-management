@@ -9,6 +9,7 @@ const {
   isValidPassword,
 } = require ('../util/validations');
 const logger = require ('../util/logger');
+const {generateAvatar} = require('../util/avatar')
 
 /**
  * Handles user signup process
@@ -53,14 +54,18 @@ exports.signup = async (req, res, next) => {
     // hashed the password with salt value 12
     const hashedPassword = await bcrypt.hash (password, 12);
 
+    const avatarUrl = generateAvatar(username);
     const newUser = new Auth ({
       username,
       email,
       password: hashedPassword,
+      profilePicture:avatarUrl
     });
     await newUser.save ();
+    
     const userProfile = new Profile ({userId: newUser._id});
     await userProfile.save ();
+
     logger.info (
       `The user has been created successfully with id: ${newUser._id} and profile id: ${userProfile._id}`
     );
