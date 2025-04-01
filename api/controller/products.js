@@ -73,7 +73,7 @@ exports.addProducts = async (req, res, next) => {
     );
     res
       .status (201)
-      .json ({message: 'The product has been added successfully'});
+      .json ({message: 'The product has been added successfully', product:newProduct});
   } catch (error) {
     logger.error (`Some error occured while adding product: ${error}`);
     return res.status (500).json ({message: 'Error while adding product'});
@@ -159,7 +159,7 @@ exports.editProductsData = async (req, res, next) => {
     logger.info (
       `Product updated successfully. product details:${updateProduct}`
     );
-    res.status (200).json ({message: 'Product updated successfully'});
+    res.status (200).json ({message: 'Product updated successfully',product:updateProduct});
   } catch (error) {
     logger.error (`Error while updating product: ${error}`);
     res.status (500).json ({message: 'Error while updating the product'});

@@ -69,7 +69,7 @@ exports.signup = async (req, res, next) => {
     logger.info (
       `The user has been created successfully with id: ${newUser._id} and profile id: ${userProfile._id}`
     );
-    res.status (201).json ({message: 'User created successfully'});
+    res.status (201).json ({message: 'User created successfully',user:newUser});
   } catch (error) {
     logger.error (`Internal error while signing up: ${error.stack}`);
     res.status (500).json ({message: 'Internal server error has been occured'});

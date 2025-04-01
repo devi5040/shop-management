@@ -56,7 +56,9 @@ exports.addExpense = async (req, res, next) => {
     });
     await newExpense.save ();
     logger.info (`Expense added successfully. expenseId: ${newExpense._id}`);
-    res.status (201).json ({message: 'Expense added successfully'});
+    res
+      .status (201)
+      .json ({message: 'Expense added successfully', expense: newExpense});
   } catch (error) {
     logger.error (`Error while adding expense:${error}`);
     res.status (500).json ({message: 'Error while adding expense'});
@@ -169,12 +171,21 @@ exports.updateExpense = async (req, res, next) => {
         .status (409)
         .json ({message: 'Expense with this name already exists.'});
     }
-    await Expenses.findByIdAndUpdate (expenseId, expenseData, {
-      runValidators: true,
-      new: true,
-    });
+    const updateExpenseData = await Expenses.findByIdAndUpdate (
+      expenseId,
+      expenseData,
+      {
+        runValidators: true,
+        new: true,
+      }
+    );
     logger.info ('Expense updated successfully');
-    res.status (200).json ({message: 'Expense updated successfully'});
+    res
+      .status (200)
+      .json ({
+        message: 'Expense updated successfully',
+        expense: updateExpenseData,
+      });
   } catch (error) {
     logger.error (`Error while updating the expense. ${error}`);
     res.status (500).json ({message: 'Error while updating the expense.'});
