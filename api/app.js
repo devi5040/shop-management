@@ -6,6 +6,7 @@ const mongoose = require ('mongoose');
 const cors = require ('cors');
 const session = require ('express-session');
 const passport = require ('./util/passport');
+const User = require ('./model/auth');
 
 const app = express ();
 const PORT = process.env.PORT || 8080;
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 8080;
 const authRoutes = require ('./routes/auth');
 const productRoutes = require ('./routes/products');
 const expensesRoutes = require ('./routes/expenses');
+const cartRoutes = require ('./routes/cart');
 
 // Initialize body-parser to parse JSON request bodies
 app.use (bodyParser.json ());
@@ -28,10 +30,17 @@ app.use (
 app.use (passport.initialize ());
 app.use (passport.session ());
 
+app.use (async (req, res, next) => {
+  const user = await User.findById ('67ed4783773af80c554f0128');
+  req.user = user;
+  next ();
+});
+
 //Initialize the routes
 app.use ('/auth', authRoutes);
 app.use ('/product', productRoutes);
 app.use ('/expenses', expensesRoutes);
+app.use ('/cart', cartRoutes);
 
 // Initialize the connection to mongoose and start the server
 mongoose

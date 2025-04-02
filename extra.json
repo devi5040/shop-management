@@ -1,0 +1,78 @@
+{
+    "items": [
+        {
+            "productId": "67e2c6db8f3a3248bb7573fc",
+            "quantity": 2,
+            "price": 490,
+            "_id": "67ed66d44e97b46812936bc8"
+        },
+        {
+            "__parentArray": [
+                {
+                    "productId": "67e2c6db8f3a3248bb7573fc",
+                    "quantity": 2,
+                    "price": 490,
+                    "_id": "67ed66d44e97b46812936bc8"
+                },
+                {
+                    "productId": "67e2962fcdd430a8b364303a",
+                    "quantity": 2,
+                    "price": 12000,
+                    "_id": "67ed66ef4e97b46812936bd1"
+                }
+            ],
+            "__index": 1,
+            "$__parent": {
+                "_id": "67ed66d44e97b46812936bc7",
+                "userId": "67ed4783773af80c554f0128",
+                "items": [
+                    {
+                        "productId": "67e2c6db8f3a3248bb7573fc",
+                        "quantity": 2,
+                        "price": 490,
+                        "_id": "67ed66d44e97b46812936bc8"
+                    },
+                    {
+                        "productId": "67e2962fcdd430a8b364303a",
+                        "quantity": 2,
+                        "price": 12000,
+                        "_id": "67ed66ef4e97b46812936bd1"
+                    }
+                ],
+                "totalPrice": 36490,
+                "createdAt": "2025-04-02T16:33:24.583Z",
+                "updatedAt": "2025-04-02T16:35:17.275Z",
+                "__v": 0
+            },
+            "$__": {
+                "activePaths": {
+                    "paths": {
+                        "price": "init",
+                        "quantity": "init",
+                        "productId": "init",
+                        "_id": "init"
+                    },
+                    "states": {
+                        "require": {},
+                        "default": {},
+                        "init": {
+                            "productId": true,
+                            "quantity": true,
+                            "price": true,
+                            "_id": true
+                        }
+                    }
+                }
+            },
+            "_doc": {
+                "productId": "67e2962fcdd430a8b364303a",
+                "quantity": 2,
+                "price": 12000,
+                "_id": "67ed66ef4e97b46812936bd1"
+            },
+            "$isNew": false,
+            "quantity": 4
+        }
+    ],
+    "totalPrice": 60490
+}
