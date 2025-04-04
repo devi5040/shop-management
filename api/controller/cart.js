@@ -111,10 +111,15 @@ exports.deleteCartItem = async (req, res, next) => {
       return res.status (404).json ({message: 'Cart does not exists'});
     }
     const cartId = cart._id.toString ();
-    const product = await Product.findById (productId);
-    //const productPrice = cart.items;
+    const product = await Cart.findOne ({'items.productId': productId});
     let productPrice;
-    // add conditionfor product does notexist in the cart
+
+    if (!product) {
+      logger.info (`Product does not exists in the cart`);
+      return res
+        .status (404)
+        .json ({message: 'Product does not exists in the cart'});
+    }
 
     const cartData = {
       items: cart.items.filter (item => {
@@ -124,15 +129,16 @@ exports.deleteCartItem = async (req, res, next) => {
       }),
       totalPrice: cart.totalPrice - productPrice,
     };
-    console.log (cart.totalPrice - productPrice);
-    console.log (cart.totalPrice);
-    console.log (productPrice);
+
     const data = await Cart.findByIdAndUpdate (cartId, cartData, {
       new: true,
       runValidators: true,
     });
-    logger.info (`The cart data is: ${JSON.stringify (cartData)}`);
-    res.status (200).json ({message: 'removed successfully', data});
+    logger.info (`The item has been removed successfully from the cart`);
+    res.status (200).json ({
+      message: 'removed The item has been removed successfully from the cart',
+      cart: data,
+    });
   } catch (error) {
     logger.error (`Error while deleting cart items: ${error}`);
     res.status (500).json ({message: 'Error while deleting cart items.'});
