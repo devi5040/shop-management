@@ -14,4 +14,10 @@ router.post (
   cartController.incrementQuantity
 );
 
+// route definition for decrementing cart quantity
+router.post (
+  '/decrement-quantity/:productId',
+  cartController.decrementQuantity
+);
+
 module.exports = router;

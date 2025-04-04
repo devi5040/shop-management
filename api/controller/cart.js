@@ -203,3 +203,55 @@ exports.incrementQuantity = async (req, res, next) => {
     res.status (500).json ({message: 'Error while updating cart.'});
   }
 };
+
+/**
+ * Api endpoint for incrementing cart item quantity
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
+exports.decrementQuantity = async (req, res, next) => {
+  const user = req.user;
+  const userId = user._id.toString ();
+  const productId = req.params.productId;
+  try {
+    const cart = await Cart.findOne ({userId});
+    if (!cart) {
+      logger.error ('The cart does not exists');
+      return res.status (404).json ({message: 'The cart does not exists'});
+    }
+    const cartId = cart._id.toString ();
+    const product = await Product.findById (productId);
+    const price = product.price;
+
+    const productExists = await Cart.findOne ({'items.productId': productId});
+    if (!productExists) {
+      logger.error ('The product does not exists in the cart');
+      return res
+        .status (404)
+        .json ({message: 'The product does not exist in the cart'});
+    }
+
+    const cartData = {
+      items: cart.items.map (
+        item =>
+          item.productId.toString () === productId.toString ()
+            ? {...item._doc, quantity: item.quantity - 1}
+            : item
+      ),
+      totalPrice: cart.totalPrice + price,
+    };
+    const data = await Cart.findByIdAndUpdate (cartId, cartData, {
+      runValidators: true,
+      new: true,
+    });
+    logger.error ('The quantity updated successfully');
+    res
+      .status (200)
+      .json ({message: 'The cart updated successfully', cart: data});
+  } catch (error) {
+    logger.error (`Error while incrementing quantity in cart: ${error}`);
+    res.status (500).json ({message: 'Error while updating cart.'});
+  }
+};
