@@ -8,4 +8,10 @@ router.post ('/add-cart', cartController.addToCart);
 //route definition for removing an item from the cart
 router.post ('/remove-item/:productId', cartController.deleteCartItem);
 
+// route definition for incrementing cart quantity
+router.post (
+  '/increment-quantity/:productId',
+  cartController.incrementQuantity
+);
+
 module.exports = router;
