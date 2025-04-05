@@ -16,6 +16,7 @@ const authRoutes = require ('./routes/auth');
 const productRoutes = require ('./routes/products');
 const expensesRoutes = require ('./routes/expenses');
 const cartRoutes = require ('./routes/cart');
+const orderRoutes = require ('./routes/orders');
 
 // Initialize body-parser to parse JSON request bodies
 app.use (bodyParser.json ());
@@ -41,6 +42,7 @@ app.use ('/auth', authRoutes);
 app.use ('/product', productRoutes);
 app.use ('/expenses', expensesRoutes);
 app.use ('/cart', cartRoutes);
+app.use ('/order', orderRoutes);
 
 // Initialize the connection to mongoose and start the server
 mongoose
