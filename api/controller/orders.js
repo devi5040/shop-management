@@ -27,6 +27,7 @@ exports.createOrder = async (req, res, next) => {
       orderStatus: 'pending',
       userId: userId,
     });
+    // empty the cart
     await newOrder.save ();
     res.status (201).json ({message: 'New order created successfully'});
   } catch (error) {
