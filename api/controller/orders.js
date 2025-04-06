@@ -2,9 +2,18 @@ const Order = require ('../model/orders');
 const Cart = require ('../model/cart');
 const logger = require ('../util/logger');
 const {generateOrderId} = require ('../util/helper');
+
+/**
+ * Api endpoint for creating the order
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
 exports.createOrder = async (req, res, next) => {
   const user = req.user;
   const userId = user._id;
+  const {paymentMode} = req.body;
   try {
     const cart = await Cart.findOne ({userId});
     if (!cart) {
@@ -29,7 +38,7 @@ exports.createOrder = async (req, res, next) => {
       orderId: orderId,
       items: productsData,
       totalPrice: cart.totalPrice,
-      paymentMode: 'online',
+      paymentMode: paymentMode,
       orderStatus: 'pending',
       userId: userId,
     });
