@@ -1,7 +1,7 @@
 const Order = require ('../model/orders');
 const Cart = require ('../model/cart');
 const logger = require ('../util/logger');
-
+const {generateOrderId} = require ('../util/helper');
 exports.createOrder = async (req, res, next) => {
   const user = req.user;
   const userId = user._id;
@@ -19,8 +19,14 @@ exports.createOrder = async (req, res, next) => {
         price: item.price,
       };
     });
+    const orderId = generateOrderId ();
+    const orderExists = await Order.findOne ({orderId});
+    if (orderExists) {
+      logger.error (`Order already exists with id: ${orderId}`);
+      return res.status (409).json ({message: 'Order already exists'});
+    }
     const newOrder = new Order ({
-      orderId: '3d33',
+      orderId: orderId,
       items: productsData,
       totalPrice: cart.totalPrice,
       paymentMode: 'online',
