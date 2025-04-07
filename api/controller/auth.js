@@ -9,7 +9,7 @@ const {
   isValidPassword,
 } = require ('../util/validations');
 const logger = require ('../util/logger');
-const {generateAvatar} = require('../util/avatar')
+const {generateAvatar} = require('../util/helper')
 
 /**
  * Handles user signup process
