@@ -76,3 +76,29 @@ exports.getOrderDetails = async (req, res, next) => {
     res.status (500).json ({message: 'Error while fetching order details.'});
   }
 };
+
+/**
+ * Api endpoint for getting order status
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.getOrderStatus = async (req, res, next) => {
+  const orderId = req.params.orderId;
+  try {
+    const order = await Order.findOne ({orderId});
+    if (!order) {
+      logger.error ('Order does not exists');
+      return res.status (404).json ({message: 'Order does not exists'});
+    }
+    const orderStatus = order.orderStatus;
+    logger.info ('Order status fetched successfully');
+    res
+      .status (200)
+      .json ({message: 'Order status fetched successfully', orderStatus});
+  } catch (error) {
+    logger.error (`Error while fetching order status. Error: ${error}`);
+    res.status (500).json ({message: 'Error while fetching order status'});
+  }
+};
