@@ -51,4 +51,28 @@ exports.createOrder = async (req, res, next) => {
   }
 };
 
-// get cart items remaining in cart controller
+/**
+ * Api endpoint for fetching order details
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
+exports.getOrderDetails = async (req, res, next) => {
+  const user = req.user;
+  const userId = user._id;
+  try {
+    const order = await Order.find ({userId}).populate ('items.productId');
+    if (!order) {
+      logger.error ('Order does not exists');
+      return res.status (404).json ({message: 'Order does not exists.'});
+    }
+    logger.info ('Order details fetched successfully.');
+    res
+      .status (200)
+      .json ({message: 'Order details fetched successfully.', order});
+  } catch (error) {
+    logger.error (`Error while fetching order details. Error: ${error}`);
+    res.status (500).json ({message: 'Error while fetching order details.'});
+  }
+};

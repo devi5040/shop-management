@@ -256,6 +256,13 @@ exports.decrementQuantity = async (req, res, next) => {
   }
 };
 
+/**
+ * Api endpoint for getting cart details
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
 exports.getCart = async (req, res, next) => {
   const user = req.user;
   const userId = user._id.toString ();
