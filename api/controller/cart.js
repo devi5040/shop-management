@@ -255,3 +255,22 @@ exports.decrementQuantity = async (req, res, next) => {
     res.status (500).json ({message: 'Error while updating cart.'});
   }
 };
+
+exports.getCart = async (req, res, next) => {
+  const user = req.user;
+  const userId = user._id.toString ();
+  try {
+    const cart = await Cart.findOne ({userId}).populate ('items.productId');
+    if (!cart) {
+      logger.error ('Cart does not exists');
+      return res.status (404).json ({message: 'Cart does not exists'});
+    }
+    logger.info ('Cart details fetched successfully');
+    res
+      .status (200)
+      .json ({message: 'Cart details fetched successfully', cart});
+  } catch (error) {
+    logger.error (`Error while fetching cart details. Error:${error}`);
+    res.status (500).json ({message: 'Error while fetching cart details'});
+  }
+};
