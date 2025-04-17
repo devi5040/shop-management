@@ -117,6 +117,12 @@ exports.deleteCartItem = async (req, res, next) => {
       logger.error ('cart does not exists');
       return res.status (404).json ({message: 'Cart does not exists'});
     }
+
+    if (userId.toString () === cart.userId.toString ()) {
+      logger.error ('User not authorized');
+      return res.status (403).json ({message: 'User not authorized'});
+    }
+
     const cartId = cart._id.toString ();
     const product = await Cart.findOne ({'items.productId': productId});
     let productPrice;
@@ -169,6 +175,12 @@ exports.incrementQuantity = async (req, res, next) => {
       logger.error ('The cart does not exists');
       return res.status (404).json ({message: 'The cart does not exists'});
     }
+
+    if (userId.toString () === cart.userId.toString ()) {
+      logger.error ('User not authorized');
+      return res.status (403).json ({message: 'User not authorized'});
+    }
+
     const cartId = cart._id.toString ();
     const product = await Product.findById (productId);
     const price = product.price;
@@ -221,6 +233,12 @@ exports.decrementQuantity = async (req, res, next) => {
       logger.error ('The cart does not exists');
       return res.status (404).json ({message: 'The cart does not exists'});
     }
+
+    if (userId.toString () === cart.userId.toString ()) {
+      logger.error ('User not authorized');
+      return res.status (403).json ({message: 'User not authorized'});
+    }
+
     const cartId = cart._id.toString ();
     const product = await Product.findById (productId);
     const price = product.price;
@@ -272,6 +290,12 @@ exports.getCart = async (req, res, next) => {
       logger.error ('Cart does not exists');
       return res.status (404).json ({message: 'Cart does not exists'});
     }
+
+    if (userId.toString () === cart.userId.toString ()) {
+      logger.error ('User not authorized');
+      return res.status (403).json ({message: 'User not authorized'});
+    }
+
     logger.info ('Cart details fetched successfully');
     res
       .status (200)
