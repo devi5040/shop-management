@@ -102,3 +102,34 @@ exports.getOrderStatus = async (req, res, next) => {
     res.status (500).json ({message: 'Error while fetching order status'});
   }
 };
+
+exports.cancelOrder = async (req, res, next) => {
+  const user = req.user;
+  const userId = user._id;
+  const orderId = req.params.orderId;
+  try {
+    const order = await Order.findById (orderId);
+    if (!order) {
+      logger.error ('Order does not exists');
+      return res.status (404).json ({message: 'Order does not exists'});
+    }
+    if (order.userId.toString () !== userId.toString ()) {
+      logger.error ('User is not authorized to do this action');
+      return res
+        .status (403)
+        .json ({message: 'User is not authorized to do this action'});
+    }
+    await Order.findByIdAndUpdate (
+      orderId,
+      {orderStatus: 'cancelled'},
+      {runValidators: true, new: true}
+    );
+    logger.info ('Order cancelled');
+    res.status (200).json ({message: 'Order cancelled successfully'});
+  } catch (error) {
+    logger.error (`Some error occured while cancelling the order:${error}`);
+    res
+      .status (500)
+      .json ({message: 'Some error occured while cancelling the order'});
+  }
+};
