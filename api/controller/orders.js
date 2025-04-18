@@ -103,6 +103,13 @@ exports.getOrderStatus = async (req, res, next) => {
   }
 };
 
+/**
+ * Api endpoint for cancelling the order
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Function} next 
+ * @returns {Promise<void>}
+ */
 exports.cancelOrder = async (req, res, next) => {
   const user = req.user;
   const userId = user._id;

@@ -11,4 +11,7 @@ router.post ('/create-order', orderController.createOrder);
 // route definition for getting the order status
 router.get ('/order-status/:orderId', orderController.getOrderStatus);
 
+// route definition for cancelling the order
+router.post ('/cancel-order/:orderId', orderController.cancelOrder);
+
 module.exports = router;
